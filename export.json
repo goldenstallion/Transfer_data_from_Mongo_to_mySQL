@@ -1,0 +1,8 @@
+{"_id": "64307ef302a0320de41984ea", "Name": "Raj Kumar", "Address": "Sears Streer, NZ", "Age": "42"}
+{"_id": "64307f1c02a0320de41984eb", "Name": "Raj Kumar", "Address": "Sears Streer, NZ", "Age": "42"}
+{"_id": "6430837902a0320de41984ec", "Name": "Meshach Nnosiri", "Address": "Ehime Mbano, Nigeria", "Age": "29"}
+{"_id": "6430837902a0320de41984ed", "Name": "Franklin Nnosiri", "Address": "Ehime Mbano, Nigeria", "Age": "31"}
+{"_id": "6430837902a0320de41984ee", "Name": "Judith Nnosiri", "Address": "Portharcourt, Nigeria", "Age": "24"}
+{"_id": "643095ec02a0320de41984ef", "Name": "Nancy Nnosiri", "Address": "Owerri, Nigeria", "Age": "26", "marrital_status": "Single"}
+{"_id": "6430ac89cd83c136312f3c9f", "title": "Beautiful Soup: Build a Web Scraper With Python", "author": "Martin", "contributors": ["Aldren", "Geir Arne", "Jaya", "Joanna", "Mike"], "url": "https://realpython.com/beautiful-soup-web-scraper-python/"}
+{"_id": "6430add2cd83c136312f3ca0", "title": "Beautiful Soup: Build a Web Scraper With Python", "author": "Martin", "contributors": ["Aldren", "Geir Arne", "Jaya", "Joanna", "Mike"], "url": "https://realpython.com/beautiful-soup-web-scraper-python/"}
