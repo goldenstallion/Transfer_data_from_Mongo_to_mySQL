@@ -1,5 +1,6 @@
 <h1>Using Relationalize to transfer Data from MongoDB to MySQL.</h1>
 Relationalize is a python library that helps transform collections of documents in JSON objects format into sets of normalized tables that can be loaded in a relational database. This normalized tables are then converted to CSV files which in turn are easily written into a relational database. 
+
       //example of json objects
       {'Address': 'Sears Streer, NZ',
       'Age': '42',
