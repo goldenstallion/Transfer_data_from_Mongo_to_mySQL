@@ -1,0 +1,112 @@
+Moving Data from a Non-Realtional Database to a Relational Database using Relationalize Class.
+
+For this project we will be dealing with MongoDB(non-relational data base) and MySQL(relational database).
+
+There are challenges one encounters when transferring data from a non-realtional to a relational database and if you have ever attempted moving data from a non-relational database to a relational database, you would understand this challenges.
+
+Two of the widely encounterd problems are:
+1. Arrays within documents
+2: Differing data types within the same location in different documents.
+
+For those who aren't aware of the term 'Documents' used in non-relational db, I will give a brief summary about NRDB and I will encourage you to read further on the topic.
+
+Non-Relational Database(NRDB):
+This type of database also referred to as 'NoSQL" stores information in non-tabular form, in the simplest term this implies that data are stored in a sligtly different manner compared to Relational Database(RDB) yet very significant.
+Non-relational database is written in a JSON format(JavaScript Object Notation) this differs from Relational database which is written in a different and straightfoward manner for example:
+query = {'Name': 'Franklin Nnosiri',
+	 'Occupation': 'Data Analyst',
+	 'Marrital Status': 'Single'}
+Relational database is not written in this format.
+ 		
+Unlike Relational database with rows and columns which accounts for it's tabular nature, non-relational database stores it's data as Collection and Documents. Collection and Document is what is referred to as Table and rows used in RDB, unlike RDB which has a laid down schema structure(for every data in a table, it has a designated column field that requires a specific data type input, each data row has to have a value for each field not more. Although some columns can have null values) whereas, NRDB which is also known as Schemaless may have different documents(rows). Each row in a RDB have a specific data type in their fields while that of NRDB can have different datatypes in a specific field this is one of the challenges one experiences when moving data from a NRDB to a RDB another problem being that the data in a specific field in a document may also have an arrays of iput this feature is not available in the RDB.
+
+Well, I have succeeded in giving comparisons between RDB and NRDB, hopefully you now have clarity on differences between RDB and NRDB systems and the challenges when transferring data from NRDB to RDB.
+
+Moving on, let's discuss the common challenges associated with moving datasets from a non-relational database to a relational database.
+
+1. Arrays in a documents: In NRDB fields in Collection(table), may be reqired to have more than one entry[arrays], for example a required field "Contributors" in NRDB may be required to have more than one entry such as:
+{ "Contriutors": ['Aldren', 'Geir Arne', 'Jaya', 'Joanna', 'Mike']}, a relational database won't accept multiple entries for a required field instead, a different table bearing the name "Contributors" is created and then mapped to the main table using the unique primary identifying IDs to connect to each and every value contained in NRDB contributors field which is why it is referred to as Relational Database.
+
+2. Differing data types within the same location in different documents:
+Fields in a NRDB may have more than one type of data such that a document having an integer input while other documents with a different data type exmaple: char/spring in some cases array.
+
+NRDB is better suited storing complex data sets, it is faster especially when trying to avoid creating different tables for a dataset. There are other attributes to NRDB let's not deviate from the topic any further.
+
+Using Relationalize a python package, I will walk you through on how you can transfer data from a non-relational DB(Mongo DB) to a relational database(MySQL) without needing to predefine schemas or data-types.
+
+I will be making use of a rough data set named employee data, and an instance of MongoDB Atlas.
+
+Assuming you have read/write access to Mongo and MySQL database which can be done manually in your system.
+
+Firstly, install the packages needed for this exercise namely, mysql-connector-python, pymongo, and relationalize using the pip install command eg. pip install pymongo. 
+
+RELATIONALIZE:
+Relationalize is a python library that helps transform collections of documents in JSON objects format into sets of normalized tables that can be loaded in a relational database. After which the relationalized object is converted into a dataframe that is then written in a relational database. 
+
+{'Address': 'Sears Streer, NZ',
+ 'Age': '42',
+ 'Name': 'Raj Kumar',
+ '_id': ObjectId('64307ef302a0320de41984ea')}
+{'_id': ObjectId('6430add2cd83c136312f3ca0'),
+ 'author': 'Martin',
+ 'contributors': ['Aldren', 'Geir Arne', 'Jaya', 'Joanna', 'Mike'],
+ 'title': 'Beautiful Soup: Build a Web Scraper With Python',
+ 'url': 'https://realpython.com/beautiful-soup-web-scraper-python/'}
+
+There are a few challenges that needs to be corrected before this data can be transferred.
+1. Sparse columns ("contributors", "name", "author", "age", field)
+2. Arrays ("Contributors", field)
+
+Relationalize provides solution to these challenges, it is faster, portable, and has less limitations compared to some other methods.
+
+Method:
+Relationalize repeatedly navigates the JSON object, splitting the documents in a collection whenever it encounters an array then it provides connection between the objects i.e the separated arrays and the rest of the data.
+
+The relationalize class is provided with a function that determines where the transformed data is written. Additionally, any nested objects that is output by relationalize becomes a flattened JSON object.
+
+This package also provides a "Schema class" which generates a schema for a collection of flattened JSON objects. This schema can also be used to handle type ambiguity and to also generate SQL DDL.
+
+When processing JSON objects in a collection, the schema is not known unless we provide a function that will enable relationalize class to generate schema and store the new collections it will eventually create. it takes a function (identifier: str) -> TextIO as an argument then creates an output. The function "(identifier: str) -> TextIO" is used to create an output.
+
+It also takes an optional function which called whenever an object is written to a file created by the (identifier: str) -> TextIO function. This method can be used to generate the schema as the objects are encountered. This reduces the number of iterations over the JSON objects.
+
+For example:
+
+schemas: Dict[str, Schema] = {}
+
+def on_object_write(schema: str, object: dic):
+	if schema not in schemas:
+		schemas[schema] = Schema()
+	schemas[schema].read_object(object)
+
+with Relationalize('object_name', on_object_write=on_object_write) as r:
+    r.relationalize([{...}, {...}])
+
+After relationalizing the JSON objects and the schemas have been generated, the objects are then converted into the final JSON object which is then loaded into a relational database. convert_object will break out any ambiguosly typed columns into seperate columns. 
+
+The second document in the collection would output the following three documents after being processed by relationalized and convert_object:
+
+#employees
+{
+   '_id': ObjectId('6430add2cd83c136312f3ca0'),
+   'author': 'Martin',
+   'title': 'Beautiful Soup: Build a Web Scraper With Python',
+   'url': 'https://realpython.com/beautiful-soup-web-scraper-python/'}
+
+{'_id': ObjectId('6430add2cd83c136312f3ca0'),
+ 'author': 'Martin',
+ 'contributors': ['Aldren', 'Geir Arne', 'Jaya', 'Joanna', 'Mike'],
+ 'title': 'Beautiful Soup: Build a Web Scraper With Python',
+ 'url': 'https://realpython.com/beautiful-soup-web-scraper-python/'
+ 'cntributors': 'R_243787c5dbc14203995f3cecfbf310b0'}
+
+#employees_contributors
+{
+  'contributors__rid_': R_243787c5dbc14203995f3cecfbf310b0	,
+  'contributors__index_': '0',
+  'contributors_val_': 'Aldren' }
+{
+  'contributors__rid_': 'R_243787c5dbc14203995f3cecfbf310b0'),
+  'contributors__index_': '1',
+  'contributors_val_': 'Geir Arne' }
+
